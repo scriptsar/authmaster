@@ -1,5 +1,5 @@
 import { registerUser } from "./auth.js";
-
+import jwt from 'jsonwebtoken'
 import { authenticateUser } from '../users/user.js'
 export const signup = async (req, res) => {
     console.log('did i comehere')
@@ -13,23 +13,23 @@ export const signup = async (req, res) => {
 
 export const signin = async (req, res) => {
     try {
-        console.log('the data from postman:', req.body)
+
         const foundUser = await authenticateUser(req.body);
         console.log('found user:', foundUser)
         if (!foundUser) {
             return res.status(401).json({ 'message': 'Unauthorized user' })
 
         }
-        const accessToken = jwt.sign({ id: foundUser.id, email: foundUser.email, username: foundUser.name }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
+        const accessToken = jwt.sign({ id: foundUser.id, email: foundUser.email, name: foundUser.fullname }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
 
-        // const refreshToken = jwt.sign({ id: foundUser.id, email: foundUser.email, name: foundUser.fullname }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d' });
+        const refreshToken = jwt.sign({ id: foundUser.id, email: foundUser.email, name: foundUser.fullname }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d' });
         // foundUser.refreshToken = refreshToken;
         // const result = await foundUser.save();
-        // res.cookie('jwt', refreshToken, {httpOnly: true,secure: true, sameSite: 'None',maxAge: 24 * 60 * 60 * 1000});
-        // res.status(200).json({ accessToken, });
-
+        const response = { ...foundUser, accessToken, refreshToken }
+        console.log('the response to send', response)
+        res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
         // generate token 
-        // res.status(200).json()
+        res.status(200).json(response)
     } catch (error) {
         console.log(error);
 
