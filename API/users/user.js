@@ -2,7 +2,14 @@
 
 
 import User from "./user.model.js";
-
+export const findUserById=async(id)=>{
+    try {
+        const user=await User.findById(id);
+        return user.toJSON();
+    } catch (error) {
+        throw new Error('')
+    }
+}
 export const fetchAllUsers = async () => {
     try {
         const data = await User.find({})

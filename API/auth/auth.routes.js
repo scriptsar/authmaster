@@ -3,6 +3,7 @@ import { signin,signup,signout } from "./auth.handlers.js";
 import { Router } from "express";
 import { signInValidationSchema } from "./auth.validation.js";
 import { signInValidatorMiddleware, signUpValidatorMiddleware } from "./auth.middlware.js";
+import { verifyToken } from "../../middleware/token.middleware.js";
 // auth mini app
 const authRouter=Router();
 
@@ -30,7 +31,7 @@ authRouter.post('/mfa/verify')
 authRouter.post('/mfa/disable')
 
 // 5. Account Management
-authRouter.post('/deactivate-account')
+authRouter.post('/deactivate-account',verifyToken)
 authRouter.post('/delete-account')
 
 // 6. third party authentication

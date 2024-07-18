@@ -21,14 +21,12 @@ export const signin = async (req, res) => {
 
         }
         const accessToken = jwt.sign({ id: foundUser.id, email: foundUser.email, name: foundUser.fullname }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1d' });
-
         const refreshToken = jwt.sign({ id: foundUser.id, email: foundUser.email, name: foundUser.fullname }, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '1d' });
         // foundUser.refreshToken = refreshToken;
         // const result = await foundUser.save();
         const response = { ...foundUser, accessToken, refreshToken }
-        console.log('the response to send', response)
+  
         res.cookie('jwt', refreshToken, { httpOnly: true, secure: true, sameSite: 'None', maxAge: 24 * 60 * 60 * 1000 });
-        // generate token 
         res.status(200).json(response)
     } catch (error) {
         console.log(error);
@@ -36,8 +34,5 @@ export const signin = async (req, res) => {
     }
 
 }
-
-
-
 
 export const signout = async () => { }
